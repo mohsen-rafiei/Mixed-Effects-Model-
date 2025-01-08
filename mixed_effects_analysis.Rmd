@@ -1,0 +1,85 @@
+
+---
+title: "Mixed Effects Model Analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+This document demonstrates how to analyze a dataset using mixed-effects models. The dataset contains repeated measures of participant performance over time, with varying task difficulty levels. Mixed-effects models are used to account for both fixed effects (e.g., task difficulty) and random effects (e.g., individual differences).
+
+---
+
+## Step 1: Load the Data
+
+```{r load-data}
+# Load necessary libraries
+library(tidyverse)
+library(lme4)
+
+# Load the dataset (assuming it's in the same folder as this Rmd file)
+data <- read.csv("mixed_effects_data.csv")
+
+# Quick look at the data
+head(data)
+summary(data)
+```
+
+---
+
+## Step 2: Visualize the Data
+
+```{r visualize-data}
+# Plot performance over time for all participants
+ggplot(data, aes(x = Time, y = Performance, group = Participant_ID)) +
+  geom_line(alpha = 0.5) +
+  labs(title = "Performance Over Time by Participant", x = "Time", y = "Performance")
+
+# Plot average performance over time
+ggplot(data, aes(x = Time, y = Performance)) +
+  stat_summary(fun = mean, geom = "line", color = "blue", size = 1.2) +
+  labs(title = "Average Performance Over Time", x = "Time", y = "Average Performance")
+```
+
+---
+
+## Step 3: Fit a Mixed Effects Model
+
+```{r fit-mixed-model}
+# Fit a mixed-effects model
+mixed_model <- lmer(Performance ~ Difficulty + (1 + Time | Participant_ID), data = data)
+
+# Summary of the model
+summary(mixed_model)
+```
+
+---
+
+## Step 4: Interpret the Results
+
+```{r interpret-results}
+# Fixed effects
+cat("Fixed Effects:
+")
+print(fixef(mixed_model))
+
+# Random effects
+cat("
+Random Effects:
+")
+print(ranef(mixed_model))
+
+# Model diagnostics
+plot(mixed_model)
+```
+
+---
+
+## Conclusion
+
+This document demonstrates the use of mixed-effects models to analyze repeated measures data. The model accounts for both fixed effects (e.g., task difficulty) and random effects (e.g., individual differences in intercepts and slopes). You can extend this workflow to more complex datasets or research questions.
+
